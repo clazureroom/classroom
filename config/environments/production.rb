@@ -12,9 +12,8 @@ Rails.application.configure do
   # Rake tasks automatically ignore this option for performance.
   config.eager_load = true
 
-  # Full error reports are disabled and caching is turned on.
+  # Full error reports are disabled
   config.consider_all_requests_local       = false
-  config.action_controller.perform_caching = true
 
   # Ensures that a master key has been made available in either ENV["RAILS_MASTER_KEY"]
   # or in config/master.key. This key is used to decrypt credentials (and other encrypted files).
@@ -58,28 +57,31 @@ Rails.application.configure do
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
 
-  # Use a different cache store in production.
-  memcachedcloud_servers = ENV["MEMCACHEDCLOUD_SERVERS"].split(",")
+  if ENV["USE_CACHING"] != 'false'
+    # Use caching
+    config.action_controller.perform_caching = ENV["USE_CACHING"] == 'true'
+    # Use a different cache store in production.
+    memcachedcloud_servers = ENV["MEMCACHEDCLOUD_SERVERS"].split(",")
 
-  dalli_store_name_and_password = {
-    username: ENV["MEMCACHEDCLOUD_USERNAME"],
-    password: ENV["MEMCACHEDCLOUD_PASSWORD"]
-  }
+    dalli_store_name_and_password = {
+        username: ENV["MEMCACHEDCLOUD_USERNAME"],
+        password: ENV["MEMCACHEDCLOUD_PASSWORD"]
+    }
 
-  dalli_store_config = {
-    namespace:  "CLASSROOM",
-    expires_in: (ENV.fetch("REQUEST_CACHE_TIMEOUT") { 30 }).to_i.minutes,
-    pool_size:  (ENV.fetch("RAILS_MAX_THREADS") { 5 })
-  }
+    dalli_store_config = {
+        namespace:  "CLASSROOM",
+        expires_in: (ENV.fetch("REQUEST_CACHE_TIMEOUT") { 30 }).to_i.minutes,
+        pool_size:  (ENV.fetch("RAILS_MAX_THREADS") { 5 })
+    }
 
-  config.cache_store = :dalli_store,
-                       memcachedcloud_servers,
-                       dalli_store_name_and_password.merge(dalli_store_config)
+    config.cache_store = :dalli_store,
+        memcachedcloud_servers,
+        dalli_store_name_and_password.merge(dalli_store_config)
 
-  config.peek.adapter = :memcache, {
-    client: Dalli::Client.new(memcachedcloud_servers, dalli_store_name_and_password)
-  }
-
+    config.peek.adapter = :memcache, {
+        client: Dalli::Client.new(memcachedcloud_servers, dalli_store_name_and_password)
+    }
+  end
   # Use a real queuing backend for Active Job (and separate queues per environment)
   # config.active_job.queue_adapter     = :resque
   # config.active_job.queue_name_prefix = "git_hub_classroom_#{Rails.env}"
