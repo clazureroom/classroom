@@ -9,6 +9,7 @@ end
 
 ruby File.read(File.expand_path("../.ruby-version", __FILE__)).chomp
 gem "rails", "~> 5.2.3"
+gem "bundler", "~> 2.0.2"
 
 gem "autoprefixer-rails", "~> 7.1", ">= 7.1.3"
 
