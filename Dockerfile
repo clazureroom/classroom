@@ -16,7 +16,7 @@ RUN yarn install
 
 FROM ruby:2.6.4
 
-RUN apt-get update -qq && apt-get install -y nodejs
+RUN gem install bundler -v 2.0.2
 
 RUN which env
 RUN which ruby
