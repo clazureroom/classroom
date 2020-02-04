@@ -7,7 +7,7 @@ RUN mkdir /classroom
 WORKDIR /classroom
 
 COPY package.json /classroom/package.json
-COPY package-lock.json /classroom/pacakge-lock.json
+#COPY package-lock.json /classroom/pacakge-lock.json
 
 RUN npm install
 
