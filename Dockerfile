@@ -7,9 +7,12 @@ RUN mkdir /classroom
 WORKDIR /classroom
 
 COPY package.json /classroom/package.json
+COPY yarn.lock /classroom/yarn.lock
+
 #COPY package-lock.json /classroom/pacakge-lock.json
 
 RUN npm install
+RUN yarn install
 
 FROM ruby:2.6.4
 
