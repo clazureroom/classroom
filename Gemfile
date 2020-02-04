@@ -31,6 +31,7 @@ gem "geo_pattern", "~> 1.4"
 gem "google-api-client", "~> 0.11"
 gem "googleauth", "~> 0.8.0"
 
+gem "jquery-rails", "~> 4.3.5"
 gem "jquery-datetimepicker-rails", "~> 2.4", ">= 2.4.1.0"
 gem "jquery-turbolinks",           "~> 2.1"
 

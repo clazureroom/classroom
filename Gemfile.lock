@@ -191,6 +191,10 @@ GEM
       json-jwt (~> 1.7)
       simple_oauth (~> 0.3.1)
     jquery-datetimepicker-rails (2.4.1.0)
+    jquery-rails (4.3.5)
+      rails-dom-testing (>= 1, < 3)
+      railties (>= 3.1.0)
+      thors (>= 0.14, < 2.0)
     jquery-turbolinks (2.1.0)
       railties (>= 3.1.0)
       turbolinks
@@ -528,6 +532,7 @@ DEPENDENCIES
   guard-rspec (~> 4.7, >= 4.7.3)
   ims-lti (~> 2.2.3)
   jquery-datetimepicker-rails (~> 2.4, >= 2.4.1.0)
+  jquery-rails (~> 4.3.5)
   jquery-turbolinks (~> 2.1)
   kaminari (~> 1.0, >= 1.0.1)
   knapsack (~> 1.14, >= 1.14.1)
