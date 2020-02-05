@@ -33,6 +33,7 @@ COPY . /classroom
 RUN ls
 RUN pwd
 
+RUN apt-get update -qq
 RUN apt-get install dos2unix
 RUN find ./ -type f -exec dos2unix {} \;
 
