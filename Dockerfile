@@ -28,7 +28,7 @@ COPY Gemfile /classroom/Gemfile
 COPY Gemfile.lock /classroom/Gemfile.lock
 COPY .ruby-version /classroom/.ruby-version
 
-RUN bundle update
+#RUN bundle update
 RUN bundle install
 COPY . /classroom
 
