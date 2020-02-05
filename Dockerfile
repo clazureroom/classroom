@@ -1,7 +1,10 @@
-FROM node
+FROM ruby:2.6.4
 
-RUN node -v
-RUN npm -v
+RUN apt-get update
+RUN apt-get install -y nodejs
+RUN apt-get install -y yarn
+
+RUN gem install bundler -v 2.0.2
 
 RUN mkdir /classroom
 WORKDIR /classroom
@@ -9,35 +12,20 @@ WORKDIR /classroom
 COPY package.json /classroom/package.json
 COPY yarn.lock /classroom/yarn.lock
 
-#COPY package-lock.json /classroom/pacakge-lock.json
-
-RUN npm install
-RUN yarn install
-
-FROM ruby:2.6.4
-
-RUN apt-get update
-RUN apt-get install -y nodejs
-
-RUN gem install bundler -v 2.0.2
-
 RUN which env
-RUN which ruby
 RUN ruby -v
 RUN bundle -v
 RUN node -v
+RUN yarn --version
 
-WORKDIR /classroom
 COPY Gemfile /classroom/Gemfile
 COPY Gemfile.lock /classroom/Gemfile.lock
 COPY .ruby-version /classroom/.ruby-version
 
-#RUN bundle update
-RUN bundle install --without assets
 COPY . /classroom
 
-RUN ls
-RUN pwd
+RUN bundle install --without assets
+RUN bundle exec rake assets:precompile
 
 RUN apt-get update -qq
 RUN apt-get install dos2unix
