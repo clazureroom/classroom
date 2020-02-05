@@ -33,7 +33,7 @@ COPY Gemfile.lock /classroom/Gemfile.lock
 COPY .ruby-version /classroom/.ruby-version
 
 #RUN bundle update
-RUN bundle install
+RUN bundle install --without assets
 COPY . /classroom
 
 RUN ls
