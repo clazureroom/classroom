@@ -11,13 +11,13 @@ jobs:
     steps: 
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@master
-      
-    - name 'Login via Azure'
+    
+    - name: 'Login via Azure'
       uses: azure/login@v1
       with:
         creds: ${{toJSON(github.event.client_payload.azure_credentials)}}
-    
-    - name 'Build docker'
+        
+    - name: 'Build docker'
       uses: azure/docker-login@v1
       with:
         login-server: ${{toJSON(github.event.client_payload.registry_url)}}
@@ -28,7 +28,7 @@ jobs:
         docker build . -t ${{ env.app_name }}
         docker push ${{ env.app_name }}
         
-    - name 'Deploy docker'
+    - name: 'Deploy docker'
     - uses: azure/webapps-container-deploy@v1
       with: 
         app-name: ${{toJSON(github.event.client_payload.app_name)}}
