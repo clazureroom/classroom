@@ -3,7 +3,7 @@ name: Build and Deploy on Webhook
 on: 
   repository_dispatch:
     branches: 
-      - caching_optional
+      - '*'
 
 env: 
   app_name: join(${{toJSON(github.event.client_payload.registry_url)}}, 'classroom:', ${{ github.sha }})
