@@ -12,6 +12,7 @@ jobs:
     steps: 
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@master
+      if: github.event.actions == 'my_webhook'
       with:
         ref: caching_optional 
     
