@@ -2,8 +2,6 @@ name: Build and Deploy on Webhook
 
 on: 
   repository_dispatch:
-    branches: 
-      - '*'
 
 env: 
   app_name: join(${{toJSON(github.event.client_payload.registry_url)}}, 'classroom:', ${{ github.sha }})
@@ -14,7 +12,8 @@ jobs:
     steps: 
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@master
-      if: github.event.action == 'my_webhook'
+      with:
+        ref: caching_optional 
     
     - name: 'Login via Azure'
       uses: azure/login@v1
