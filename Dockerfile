@@ -36,7 +36,7 @@ RUN apt-get install -y --no-install-recommends apt-utils
 RUN apt-get install -y yarn
 
 RUN bundle install --without development test
-RUN RAILS_ENV=production rake assets:clean assets:precompile
+RUN RAILS_ENV=production bundle exec rake assets:clean assets:precompile
 
 RUN apt-get update -qq
 RUN apt-get install dos2unix
