@@ -35,7 +35,7 @@ RUN apt-get update
 RUN apt-get install -y --no-install-recommends apt-utils
 RUN apt-get install -y yarn
 
-RUN bundle install --without assets development test
+RUN bundle install --without assets
 RUN bundle exec rake assets:precompile
 
 RUN apt-get update -qq
