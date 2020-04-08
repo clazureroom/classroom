@@ -273,9 +273,10 @@ We use [pry-rails](https://github.com/rweng/pry-rails) and [byebug](https://gith
 For more details please visit `overmind` homepage: https://github.com/DarthSim/overmind
 
 ## Deployment
-We strongly encourage you to use [https://classroom.github.com](https://classroom.github.com), but if you would like your own version GitHub Classroom can be easily deployed to Azure or Heroku.
+We strongly encourage you to use [https://classroom.github.com](https://classroom.github.com), but if you would like your own version GitHub Classroom can be easily deployed to Azure or Heroku. For instructions on the Azure deployment, see azure-deploy-guide.md
 
-<a href="https://azuredeploy.net" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fclazureroom%2Fclassroom%2Fmaster%2Fazuredeploy.json)
+
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 There are a few environment variables you will need to know in order to get GitHub Classroom working on production.
