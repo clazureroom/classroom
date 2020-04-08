@@ -1,0 +1,41 @@
+name: Build and Deploy on Webhook
+
+on: 
+  repository_dispatch:
+
+env: 
+  app_name: join(${{toJSON(github.event.client_payload.registry_url)}}, 'classroom:', ${{ github.sha }})
+
+jobs: 
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps: 
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@master
+      if: github.event.actions == 'my_webhook'
+      with:
+        ref: caching_optional 
+    
+    - name: 'Login via Azure'
+      uses: azure/login@v1
+      with:
+        creds: ${{toJSON(github.event.client_payload.azure_credentials)}}
+  
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{toJSON(github.event.client_payload.registry_url)}}
+        username: ${{toJSON(github.event.client_payload.registry_username)}}
+        password: ${{toJSON(github.event.client_payload.registry_password)}}
+    
+    - run: |
+        docker build . -t ${{ env.app_name }}
+        docker push ${{ env.app_name }}
+    
+    - uses: azure/webapps-container-deploy@v1
+      with: 
+        app-name: ${{toJSON(github.event.client_payload.app_name)}}
+        images: ${{ env.app_name }}
+       
+    - name: Azure logout
+      run: |
+        az logout

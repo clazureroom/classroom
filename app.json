@@ -28,6 +28,10 @@
     "NON_STAFF_GITHUB_ADMIN_IDS": {
       "description": "GitHub IDs of non GitHub staff members that have staff access.",
       "required": false
+    },
+    "USE_CACHING": {
+      "description": "Use 'false' to disable Memcached caching, otherwise leave blank.",
+      "required": false
     }
   },
   "addons": [

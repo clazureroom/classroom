@@ -196,7 +196,7 @@ isexe@^2.0.0:
   dependencies:
     jquery ">=1.8.0"
 
-"jquery.turbolinks@git+https://git@github.com/kossnocorp/jquery.turbolinks#2.1.0":
+"jquery.turbolinks@git+https://git@github.com/kossnocorp/jquery.turbolinks#v2.1.0":
   version "2.1.0"
   resolved "git+https://git@github.com/kossnocorp/jquery.turbolinks#6f336f1d3acceef95f9289129b64b00edc5709e7"
 
