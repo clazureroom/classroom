@@ -1,0 +1,330 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"webSiteName": {
+			"type": "string",
+			"defaultValue": "[concat('GitHub-Classroom-', uniqueString(resourceGroup().id))]",
+			"metadata": {
+				"description": "Name of the web site."
+			}
+		},
+		"databaseSkuTier": {
+            "type": "string",
+            "allowedValues": [
+                "GeneralPurpose",
+                "MemoryOptimized",
+                "Basic"
+            ],
+            "defaultValue": "Basic",
+            "metadata": {
+                "description": "Azure database for PostgreSQL pricing tier"
+            }
+        },
+		"databaseSkuCapacity": {
+			"type": "int",
+			"defaultValue": 1,
+			"allowedValues": [
+				1,
+				2,
+				4,
+				8,
+				16,
+				32
+			],
+			"metadata": {
+				"description": "Azure database for PostgreSQL compute capacity in vCores (1,2,4,8,16,32)."
+			}
+		},
+		"databaseSkuName": {
+			"type": "string",
+			"defaultValue": "B_Gen5_1",
+			"allowedValues": [
+				"GP_Gen5_2",
+				"GP_Gen5_4",
+				"GP_Gen5_8",
+				"GP_Gen5_16",
+				"GP_Gen5_32",
+				"MO_Gen5_2",
+				"MO_Gen5_4",
+				"MO_Gen5_8",
+				"MO_Gen5_16",
+				"MO_Gen5_32",
+				"B_Gen5_1",
+				"B_Gen5_2"
+			],
+			"metadata": {
+				"description": "Azure database for PostgreSQL sku name "
+			}
+		},
+		"databaseSkuSizeMB": {
+			"type": "int",
+			"allowedValues": [
+				51200,
+				102400
+			],
+			"defaultValue": 51200,
+			"metadata": {
+				"description": "Azure database for PostgreSQL Sku Size."
+			}
+		},
+		"skuName": {
+			"type": "string",
+			"defaultValue": "B1",
+			"allowedValues": [
+				"B1",
+				"B2",
+				"B3",
+				"S1",
+				"S2",
+				"S3",
+				"P1v2",
+				"P2v2",
+				"P3v2"
+			],
+			"metadata": {
+				"description": "Describes plan's pricing tier and instance size. Check details at https://azure.microsoft.com/en-gb/pricing/details/app-service/linux/"
+			}
+		},
+		"skuCapacity": {
+			"type": "int",
+			"defaultValue": 1,
+			"minValue": 1,
+			"metadata": {
+				"description": "Describes plan's instance count."
+			}
+		},
+		"administratorLogin": {
+			"type": "string",
+			"defaultValue": "myadmin",
+			"metadata": {
+				"description": "The admin user of the PostgreSQL Server."
+			}
+		},
+		"administratorLoginPassword": {
+			"type": "securestring",
+			"metadata": {
+				"description": "The password of the admin user of the PostgreSQL Server."
+			}
+		},
+		"cacheSKUName": {
+			"type": "string",
+			"allowedValues": [
+				"Basic",
+				"Standard"
+			],
+			"defaultValue": "Basic",
+			"metadata": {
+				"description": "The pricing tier of the new Azure Redis Cache."
+			}
+		},
+		"cacheSkuCapacity": {
+			"type": "int",
+			"allowedValues": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6
+			],
+			"defaultValue": 1,
+			"metadata": {
+				"description": "The size of the new Azure Redis Cache instance."
+			}
+		},
+		"githubClientID": {
+			"type": "string",
+			"metadata": {
+				"description": "The GitHub Application Client ID."
+			}
+		},
+		"githubClientSecret": {
+			"type": "string",
+			"metadata": {
+				"description": "The GitHub Application Client Secret."
+			}
+		},
+		"nonStaffGithubAdminIDS": {
+			"type": "string",
+			"metadata": {
+				"description": "GitHub user_ids of users to be granted staff level access."
+			}
+		},
+		"location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]",
+			"metadata": {
+				"description": "Location for all resources."
+			}
+		}
+	},
+	"variables": {
+		"hostingPlanName": "[concat('hpn-', uniqueString(resourceGroup().id))]",
+		"pgserverName": "[concat('psql-', uniqueString(resourceGroup().id))]",
+		"cacheName": "[concat('redis-', uniqueString(resourceGroup().id))]",
+		"postgresqlVersion": "11",
+		"databaseSkuFamily": "Gen5",
+		"cacheSkuFamily": "C",
+		"secretKeyBase": "[uniqueString(resourceGroup().id)]"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Cache/Redis",
+			"apiVersion": "2019-07-01",
+			"name": "[variables('cacheName')]",
+			"location": "[parameters('location')]",
+			"properties": {
+				"enableNonSslPort": true,
+				"sku": {
+					"name": "[parameters('cacheSkuName')]",
+					"family": "[variables('cacheSkuFamily')]",
+					"capacity": "[parameters('cacheSkuCapacity')]"
+				}
+			}
+		},
+		{
+			"type": "Microsoft.DBforPostgreSQL/servers",
+			"apiVersion": "2017-12-01",
+			"name": "[variables('pgserverName')]",
+			"location": "[parameters('location')]",
+			"sku": {
+				"name": "[parameters('databaseSkuName')]",
+				"tier": "[parameters('databaseSkuTier')]",
+				"capacity": "[parameters('databaseSkucapacity')]",
+				"size": "[parameters('databaseSkuSizeMB')]",
+				"family": "[variables('databaseSkuFamily')]"
+			},
+			"resources": [
+				{
+					"type": "firewallRules",
+					"apiVersion": "2017-12-01",
+					"name": "AllowAzureIPs",
+					"dependsOn": [
+						"[concat('Microsoft.DBforPostgreSQL/servers/', variables('pgserverName'))]"
+					],
+					"properties": {
+						"startIpAddress": "0.0.0.0",
+						"endIpAddress": "0.0.0.0"
+					}
+				}
+			],
+			"properties": {
+				"version": "[variables('postgresqlVersion')]",
+				"createMode": "Default",
+				"administratorLogin": "[parameters('administratorLogin')]",
+				"administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+				"storageMB": "[parameters('databaseSkuSizeMB')]"
+			}
+		},
+		{
+			"type": "Microsoft.Web/serverfarms",
+			"apiVersion": "2019-08-01",
+			"name": "[variables('hostingPlanName')]",
+			"location": "[parameters('location')]",
+			"sku": {
+				"name": "[parameters('skuName')]",
+				"capacity": "[parameters('skuCapacity')]"
+			},
+			"kind": "linux",
+			"properties": {
+				"reserved": true
+			}
+		},
+		{
+			"type": "Microsoft.Web/sites",
+			"apiVersion": "2019-08-01",
+			"name": "[parameters('webSiteName')]",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+				"[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]",
+				"[concat('Microsoft.Cache/Redis/', variables('cacheName'))]",
+				"[concat('Microsoft.DBforPostgreSQL/servers/', variables('pgserverName'))]"
+			],
+			"properties": {
+				"serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+				"reserved": true,
+				"siteConfig": {
+					"linuxFxVersion": "DOCKER|gisligeorgs/classroom:latest",
+					"appSettings": [
+						{
+							"name": "DOCKER_REGISTRY_SERVER_URL",
+							"value": "https://index.docker.io"
+						},
+						{
+							"name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+							"value": "false"
+						},
+						{
+							"name": "REDIS_URL",
+							"value": "[concat('redis://h:', uriComponent(listKeys(resourceId('Microsoft.Cache/Redis', variables('cacheName')), '2015-08-01').SecondaryKey), '@', variables('cacheName'),'.redis.cache.windows.net:6379')]"
+						},
+						{
+							"name": "REDIS_PROVIDER",
+							"value": "REDIS_URL"
+						},
+						{
+							"name": "USE_CACHING",
+							"value": "false"
+						},
+						{
+							"name": "WEBSITES_PORT",
+							"value": "3000"
+						},
+						{
+							"name": "DATABASE_URL",
+							"value": "[concat('postgres://',uriComponent(concat(parameters('administratorLogin'), '@', variables('pgserverName'))),':', parameters('administratorLoginPassword'),'@', reference(concat('Microsoft.DBforPostgreSQL/servers/', variables('pgserverName'))).fullyQualifiedDomainName,':5432/postgres')]"
+						},
+						{
+							"name": "CLASSROOM_WEBHOOK_URL_PREFIX",
+							"value": "[concat('https://',parameters('webSiteName'),'.azurewebsites.net')]"
+						},
+						{
+							"name": "GITHUB_CLIENT_ID",
+							"value": "[parameters('githubClientID')]"
+						},
+						{
+							"name": "GITHUB_CLIENT_SECRET",
+							"value": "[parameters('githubClientSecret')]"
+						},
+						{
+							"name": "NON_STAFF_GITHUB_ADMIN_IDS",
+							"value": "[parameters('nonStaffGithubAdminIDS')]"
+						},
+						{
+							"name": "RACK_ENV",
+							"value": "production"
+						},
+						{
+							"name": "RAILS_ENV",
+							"value": "production"
+						},
+						{
+							"name": "RAILS_LOG_TO_STDOUT",
+							"value": "enabled"
+						},
+						{
+							"name": "RAILS_SERVE_STATIC_FILES",
+							"value": "enabled"
+						},
+						{
+							"name": "SECRET_KEY_BASE",
+							"value": "[variables('secretKeyBase')]"
+						},
+						{
+							"name": "WEBSITE_ENABLE_SYNC_UPDATE_SITE",
+							"value": "true"
+						},
+						{
+							"name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
+							"value": "3"
+						}
+					],
+					"alwaysOn": false,
+					"appCommandLine": "bundle exec rake db:migrate"
+				}
+			}
+		}
+	]
+}
